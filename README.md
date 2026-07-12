@@ -1,73 +1,44 @@
 # MASP
 
-Anonymized code release for our EMNLP submission: **Mentalized Adversarial Self-Play for proactive dialogue**.
+Anonymized code for our EMNLP submission: **Mentalized Adversarial Self-Play for proactive dialogue**.
 
-To preserve double-blind review, this repository contains no author-identifying information. Datasets, model weights, experiment logs, checkpoints, and private service configuration are intentionally not included; the repository provides the model code, prompt templates, configuration examples, and reproducibility utilities needed to reproduce the main experimental results.
+Datasets, model weights, and checkpoints are not included. This repository contains no author-identifying information.
 
-## Repository layout
+## Layout
 
 ```text
-src/masp/       Core models, dialogue environment, BDI state, rewards, and evaluation
-scripts/        Training, labeling, conversion, evaluation, and verification entry points
-prompts/        BDI, rationality, role, and goal prompt templates
-configs/        Public configuration examples
-tests/          Lightweight import and interface checks
-docs/           Reproduction notes and data preparation guidance
+src/masp/    Models, dialogue environment, BDI state, rewards, evaluation
+scripts/     Training, labeling, and evaluation entry points
+prompts/     Prompt templates
+configs/     Configuration examples
+docs/        Reproduction notes
 ```
 
-## Installation
+## Setup
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
 pip install -r requirements.txt
 pip install -e .
-cp scripts/env.example.sh scripts/env.local.sh
+cp scripts/env.example.sh scripts/env.local.sh   # then edit local paths
 ```
 
-Edit `scripts/env.local.sh` with local model and data paths. The local file is ignored by Git and must never contain credentials committed to the repository.
+Data goes under `DATA_ROOT/{p4g,esconv,empathetic_dialogues,craigslist_bargain}/{train,valid,test}.json`; set `MODEL_PATH` to a compatible causal LM.
 
-## Expected local inputs
+## Reproduction
 
-The code expects the following paths to be supplied by the user:
-
-```text
-DATA_ROOT/
-  p4g/{train,valid,test}.json
-  esconv/{train,valid,test}.json
-  empathetic_dialogues/{train,valid,test}.json
-  craigslist_bargain/{train,valid,test}.json
-MODEL_PATH/              A compatible causal language model
-RUN_ROOT/                Writable output directory for caches and checkpoints
-```
-
-Dataset downloads and licenses are the responsibility of the user. Do not redistribute datasets or model weights with this repository.
-
-## Reproduction entry points
-
-Each entry point exposes its complete CLI through `--help`:
+Run the pipeline in order; every script documents its full CLI via `--help`:
 
 ```bash
-python scripts/extract_bdi_labels.py --help
-python scripts/convert_src_bdi_to_masp_cache.py --help
-python scripts/train_phase0_teacher.py --help
+python scripts/extract_bdi_labels.py --help        # Phase 0a: BDI silver labels
+python scripts/train_phase0_teacher.py --help      # Phase 0b: teacher
 python scripts/train_phase0_mentalization.py --help
-python scripts/train_phase1_warmup.py --help
-python scripts/train_phase2_selfplay.py --help
-python scripts/evaluate_masp.py --help
+python scripts/train_phase1_warmup.py --help       # Phase 1: BC warm-start
+python scripts/train_phase2_selfplay.py --help     # Phase 2: adversarial self-play
+python scripts/evaluate_masp.py --help             # Evaluation
 ```
 
-Use the same random seed, model revision, dataset split, and decoding parameters when reproducing reported results (see `docs/reproduction.md`). Save generated artifacts below `RUN_ROOT` rather than inside the source tree.
-
-## Verification
-
-```bash
-bash scripts/check_install.sh
-python -m compileall -q src scripts
-```
-
-The checks do not download data or call an external model service.
+See `docs/reproduction.md` for the settings to record when reproducing reported results.
 
 ## License
 
-Code in this repository is released under the MIT License. Third-party datasets, base models, and optional dependencies remain subject to their own licenses.
+MIT (see `LICENSE`).
