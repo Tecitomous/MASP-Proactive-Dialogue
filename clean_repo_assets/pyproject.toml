@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "masp-dialogue"
+version = "0.1.0"
+description = "Mentalized Adversarial Self-Play for proactive dialogue"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "MASP Authors" }]
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,7 @@
+seed: 42
+dtype: bf16
+attention_implementation: sdpa
+max_turns: 8
+output_root: runs
+data_root: data
+model_path: /path/to/base-model

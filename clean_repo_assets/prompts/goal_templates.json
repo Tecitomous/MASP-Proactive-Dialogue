@@ -1,0 +1,10 @@
+{
+  "p4g": {
+    "belief": "charity is trustworthy; donations help children",
+    "desire": "helping children is worthwhile",
+    "intention": "willing to donate a non-zero amount now",
+    "receptivity": 1.0,
+    "confidence": 0.8,
+    "valence": 0.5
+  }
+}
