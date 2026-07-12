@@ -1,24 +1,73 @@
-# Anonymous_MASP
+# MASP
 
-This is an anonymized repository for our EMNLP submission.
+Anonymized code release for our EMNLP submission: **Mentalized Adversarial Self-Play for proactive dialogue**.
 
-## Code Availability
+To preserve double-blind review, this repository contains no author-identifying information. Datasets, model weights, experiment logs, checkpoints, and private service configuration are intentionally not included; the repository provides the model code, prompt templates, configuration examples, and reproducibility utilities needed to reproduce the main experimental results.
 
-The source code and reproducibility package for this work are currently undergoing an internal compliance review before public release.
+## Repository layout
 
-We are committed to releasing the implementation and materials necessary to reproduce the main experimental results once the compliance review is completed.
+```text
+src/masp/       Core models, dialogue environment, BDI state, rewards, and evaluation
+scripts/        Training, labeling, conversion, evaluation, and verification entry points
+prompts/        BDI, rationality, role, and goal prompt templates
+configs/        Public configuration examples
+tests/          Lightweight import and interface checks
+docs/           Reproduction notes and data preparation guidance
+```
 
-## Planned Release Contents
+## Installation
 
-After clearance, this repository will include:
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pip install -e .
+cp scripts/env.example.sh scripts/env.local.sh
+```
 
-- Source code for MASP
-- Data preprocessing scripts
-- Training and evaluation scripts
-- Configuration files
-- Environment setup instructions
-- Commands for reproducing the main experimental results
+Edit `scripts/env.local.sh` with local model and data paths. The local file is ignored by Git and must never contain credentials committed to the repository.
 
-During the review period, this repository serves as an anonymized placeholder and will be updated as soon as the code is cleared for release.
+## Expected local inputs
 
-To preserve double-blind review, this repository does not contain any author-identifying information.
+The code expects the following paths to be supplied by the user:
+
+```text
+DATA_ROOT/
+  p4g/{train,valid,test}.json
+  esconv/{train,valid,test}.json
+  empathetic_dialogues/{train,valid,test}.json
+  craigslist_bargain/{train,valid,test}.json
+MODEL_PATH/              A compatible causal language model
+RUN_ROOT/                Writable output directory for caches and checkpoints
+```
+
+Dataset downloads and licenses are the responsibility of the user. Do not redistribute datasets or model weights with this repository.
+
+## Reproduction entry points
+
+Each entry point exposes its complete CLI through `--help`:
+
+```bash
+python scripts/extract_bdi_labels.py --help
+python scripts/convert_src_bdi_to_masp_cache.py --help
+python scripts/train_phase0_teacher.py --help
+python scripts/train_phase0_mentalization.py --help
+python scripts/train_phase1_warmup.py --help
+python scripts/train_phase2_selfplay.py --help
+python scripts/evaluate_masp.py --help
+```
+
+Use the same random seed, model revision, dataset split, and decoding parameters when reproducing reported results (see `docs/reproduction.md`). Save generated artifacts below `RUN_ROOT` rather than inside the source tree.
+
+## Verification
+
+```bash
+bash scripts/check_install.sh
+python -m compileall -q src scripts
+```
+
+The checks do not download data or call an external model service.
+
+## License
+
+Code in this repository is released under the MIT License. Third-party datasets, base models, and optional dependencies remain subject to their own licenses.
